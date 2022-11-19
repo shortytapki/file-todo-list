@@ -1,24 +1,32 @@
-import logo from './logo.svg';
+import { useEffect, useState } from 'react';
 import './App.css';
+import { Task } from './components/Task';
+import { db } from './firebase-config';
+import { collection, getDocs } from 'firebase/firestore';
 
 function App() {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const getData = async () => {
+      const querySnapshot = await getDocs(collection(db, 'tasks'));
+
+      let docs = [];
+      querySnapshot.forEach((doc) => {
+        docs.push(doc.data());
+      });
+      setData(docs);
+    };
+    getData();
+  }, []);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <main className="app">
+      <h1>ToDo List</h1>
+      <ul className="tasks">
+        {data.length !== 0 &&
+          data.map((taskObj, idx) => <Task key={idx} {...taskObj} />)}
+      </ul>
+    </main>
   );
 }
 
