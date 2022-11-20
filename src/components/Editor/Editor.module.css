@@ -1,0 +1,30 @@
+.form,
+.group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form {
+  background-color: #5dc687;
+  gap: 2rem;
+}
+
+.group {
+  gap: 1rem;
+}
+
+.group label {
+  font-size: 2.4rem;
+}
+
+input,
+textarea {
+  border-radius: 10px;
+  border: none;
+  padding: 1.5rem;
+  font-size: 3rem;
+}
+
+input {
+  height: 5rem;
+}

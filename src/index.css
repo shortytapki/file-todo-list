@@ -1,3 +1,10 @@
+:root {
+  --prussian-blue: #023047;
+  --red: #e60023;
+  --red-shade: rgba(230, 0, 35, 0.574);
+  --selective-yellow: #ffb703ff;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -12,11 +19,9 @@ body {
   font-family: sans-serif, 'Roboto';
   --light-cornflower-blue: #8ecae6;
   --blue-green: #219ebcff;
-  --prussian-blue: #023047;
-  --selective-yellow: #ffb703ff;
-  --tangerine: #fb8500ff;
+
   background-color: #8ecae6ff;
-  color: #023047;
+  color: var(--prussian-blue);
 }
 
 ul {
@@ -24,4 +29,10 @@ ul {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+}
+
+.card {
+  border-radius: 10px;
+  min-height: 10rem;
+  padding: 2.5rem;
 }
