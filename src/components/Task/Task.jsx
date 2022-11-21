@@ -1,27 +1,26 @@
 import styles from './Task.module.css';
 import { Button } from '../Button';
 import { doc, deleteDoc } from 'firebase/firestore';
-import {
-  ref,
-  getDownloadURL,
-  getStorage,
-  deleteObject,
-} from 'firebase/storage';
+import { ref, getDownloadURL, getStorage } from 'firebase/storage';
 import { app, db } from '../../firebase-config';
 import { useEffect, useState } from 'react';
+import { deleteFiles } from '../../utils/tasksUtils';
+import { EditForm } from '../Form';
 
-export const Task = ({ name, description, endsAt, id, files }) => {
+export const Task = ({ name, description, endsAt, id, fileRefs }) => {
   const [isDeleted, setIsDeleted] = useState(false);
   const [urls, setUrls] = useState([]);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [editorIsOpen, setEdtiorIsOpen] = useState();
   const expTimeStamp = new Date().getTime();
   const endsAtTimestamp = endsAt.seconds * 1000;
 
   useEffect(() => {
-    if (files.length === 0) return;
+    if (!fileRefs.length) return;
     const getFilesURLs = async () => {
       let urls = [];
-      for (const url of files) {
-        const fileURL = await getDownloadURL(ref(getStorage(app), url));
+      for (const fileRef of fileRefs) {
+        const fileURL = await getDownloadURL(ref(getStorage(app), fileRef));
         urls.push(fileURL);
       }
       setUrls(urls);
@@ -32,16 +31,37 @@ export const Task = ({ name, description, endsAt, id, files }) => {
   const removeHandler = async () => {
     setIsDeleted(true);
     await deleteDoc(doc(db, 'tasks', id));
-    for (const file of files) await deleteObject(ref(getStorage(app), file));
+    await deleteFiles(fileRefs);
   };
+
+  const completeHandler = () => setIsCompleted((prev) => !prev);
+  const editHandler = () => setEdtiorIsOpen((prev) => !prev);
 
   return (
     <>
-      {!isDeleted && (
+      {editorIsOpen && (
+        <>
+          <EditForm
+            {...{
+              urls,
+              initName: name,
+              initDescription: description,
+              initEndsAt: new Date(endsAtTimestamp)
+                .toLocaleString()
+                .slice(0, -3),
+              loadedFileRefs: fileRefs,
+            }}
+          />
+          <Button handler={editHandler} colorType="edit">
+            Закрыть форму
+          </Button>
+        </>
+      )}
+      {!isDeleted && !editorIsOpen && (
         <div
           className={`${styles.task} card ${
             endsAtTimestamp < expTimeStamp ? styles.expired : ''
-          }`}
+          } ${isCompleted ? styles.completed : ''}`}
         >
           <header className={styles.header}>
             <h2>{name}</h2>
@@ -52,19 +72,19 @@ export const Task = ({ name, description, endsAt, id, files }) => {
           </header>
           <p className={styles.description}>{description}</p>
           <p className={styles.files}>Прикреплённые файлы</p>
-          <ul className={styles.links}>
+          <ul className="links">
             {urls.map((url, idx) => (
               <li key={idx}>
-                <a href={url} className={styles.link}>
-                  {files.at(idx)}
-                </a>
+                <a href={url}>{fileRefs.at(idx)}</a>
               </li>
             ))}
           </ul>
           <div className={styles.buttons}>
-            <Button colorType="edit">Редактировать</Button>
-            <Button handler={() => {}} colorType="markAsCompleted">
-              Отметить как выполненную
+            <Button handler={editHandler} colorType="edit">
+              Редактировать
+            </Button>
+            <Button handler={completeHandler} colorType="markAsCompleted">
+              {isCompleted ? 'Вернуть в активные' : 'Отметить как выполненную'}
             </Button>
             <Button handler={removeHandler} colorType="remove">
               Удалить

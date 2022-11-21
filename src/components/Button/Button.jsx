@@ -12,7 +12,7 @@ export const Button = ({ children, colorType, handler, type }) => {
         type ? styles.add : ''
       }`}
       onClick={handler}
-      type={type && 'submit'}
+      type={type}
     >
       {children}
     </button>

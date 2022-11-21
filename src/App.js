@@ -4,7 +4,7 @@ import { Task } from './components/Task';
 import { db } from './firebase-config';
 import { collection, getDocs } from 'firebase/firestore';
 import { Button } from './components/Button';
-import { Editor } from './components/Editor';
+import { AddForm } from './components/Form';
 
 function App() {
   const [data, setData] = useState([]);
@@ -32,7 +32,7 @@ function App() {
           Добавить задачу
         </Button>
       </header>
-      {editorIsOpen && <Editor />}
+      {editorIsOpen && <AddForm />}
       <ul className="tasks">
         {data.length !== 0 &&
           data.map((taskObj, idx) => <Task key={idx} {...taskObj} />)}

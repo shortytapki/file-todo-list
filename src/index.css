@@ -37,3 +37,27 @@ ul {
   min-height: 10rem;
   padding: 2.5rem;
 }
+
+.links {
+  margin-bottom: 2rem;
+}
+
+.links li {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+a:link,
+a:visited {
+  color: #fff;
+  font-size: 2rem;
+  display: inline-block;
+  max-width: fit-content;
+}
+
+a:hover,
+a:active {
+  cursor: pointer;
+  color: #000;
+}
