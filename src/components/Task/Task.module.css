@@ -3,6 +3,10 @@
   background-color: #219ebc;
 }
 
+.expired {
+  opacity: 0.5;
+}
+
 .header {
   font-size: 2.4rem;
   margin-bottom: 3rem;
@@ -14,20 +18,32 @@
   margin-bottom: 3rem;
 }
 
-.buttons {
-  display: flex;
-  gap: 2rem;
-  justify-content: flex-end;
+.files {
+  font-size: 2rem;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+}
+
+.links {
+  margin-bottom: 2rem;
 }
 
 .link:link,
 .link:visited {
   color: #fff;
   font-size: 2rem;
+  display: inline-block;
+  max-width: fit-content;
 }
 
 .link:hover,
 .link:active {
   cursor: pointer;
   color: #000;
+}
+
+.buttons {
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
 }

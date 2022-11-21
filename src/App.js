@@ -20,7 +20,6 @@ function App() {
         docs.push({ ...doc.data(), id: doc.id });
       });
       setData(docs);
-      console.log(docs);
     };
     getData();
   }, []);
@@ -29,7 +28,9 @@ function App() {
     <main className="app">
       <header className="header">
         <h1>ToDo List</h1>
-        <Button handler={toggleEditorView}>Добавить задачу</Button>
+        <Button handler={toggleEditorView} colorType="edit">
+          Добавить задачу
+        </Button>
       </header>
       {editorIsOpen && <Editor />}
       <ul className="tasks">

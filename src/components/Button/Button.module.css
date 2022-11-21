@@ -1,5 +1,4 @@
 .button {
-  background-color: var(--prussian-blue);
   padding: 2rem 3rem;
   border: none;
   border-radius: 10px;
@@ -12,7 +11,22 @@
 
 .button:hover {
   cursor: pointer;
+}
+
+.edit {
+  background-color: var(--prussian-blue);
+}
+
+.edit:hover {
   background-color: var(--prussian-blue-shade);
+}
+
+.complete {
+  background-color: #188140;
+}
+
+.complete:hover {
+  background-color: #0f5028;
 }
 
 .remove {
@@ -24,5 +38,5 @@
 }
 
 .add {
-  background-color: hsla(143, 36%, 12%, 0.714);
+  background-color: hsl(143, 68%, 30%);
 }

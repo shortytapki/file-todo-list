@@ -11,7 +11,6 @@ export const Editor = ({ taskData }) => {
   const submitHandler = async (e) => {
     e.preventDefault();
     const storage = getStorage(app);
-
     const [nameInpit, timeInput, descriptionInput, fileInput] = e.target;
     const name = nameInpit.value;
     const description = descriptionInput.value;
