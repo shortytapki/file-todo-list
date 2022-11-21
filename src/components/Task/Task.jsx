@@ -44,11 +44,10 @@ export const Task = ({ name, description, endsAt, id, fileRefs }) => {
           <EditForm
             {...{
               urls,
+              id,
               initName: name,
               initDescription: description,
-              initEndsAt: new Date(endsAtTimestamp)
-                .toLocaleString()
-                .slice(0, -3),
+              initEndsAt: new Date(endsAtTimestamp).toISOString().slice(0, -8),
               loadedFileRefs: fileRefs,
             }}
           />

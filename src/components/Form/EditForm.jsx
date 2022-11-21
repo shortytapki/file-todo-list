@@ -1,25 +1,47 @@
 import styles from './Form.module.css';
 import { generateHash } from '../../utils/generateHash';
+import { db } from '../../firebase-config';
+import { doc } from 'firebase/firestore';
 import { Button } from '../Button';
 import { useState } from 'react';
+import { deleteFiles } from '../../utils/tasksUtils';
+import { updateDoc } from 'firebase/firestore';
 
 export const EditForm = ({
+  id,
   urls,
   initName,
   initDescription,
   initEndsAt,
   loadedFileRefs,
+  files,
 }) => {
   const [upload, setUpload] = useState(false);
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    const [nameInput, timeInput, descriptionInput, fileInput] = e.target;
-    const name = nameInput.value;
-    const description = descriptionInput.value;
-    const endsAt = timeInput.value;
-    const files = Array.from(fileInput.files);
-    const fileRefs = files.map((_) => `${name}/${generateHash()}`);
+    const removingFileRefs = Array.from(
+      e.target.querySelectorAll('input[type="checkbox"]')
+    )
+      .filter((input) => input.checked)
+      .map((input) => input.value);
+
+    if (removingFileRefs.length) {
+      await deleteFiles(removingFileRefs);
+      await updateDoc(doc(db, 'tasks', id), {
+        fileRefs: loadedFileRefs.filter(
+          (ref) => !removingFileRefs.includes(ref)
+        ),
+      });
+    }
+
+    window.location.reload();
+    // const [nameInput, timeInput, descriptionInput, fileInput] = e.target;
+    // const name = nameInput.value;
+    // const description = descriptionInput.value;
+    // const endsAt = timeInput.value;
+    // const newFiles = Array.from(fileInput.files);
+    // const newFileRefs = newFiles.map((_) => `${name}/${generateHash()}`);
   };
 
   return (
@@ -51,7 +73,7 @@ export const EditForm = ({
             {urls.map((url, idx) => (
               <li key={url}>
                 <a href={url}>{loadedFileRefs.at(idx)}</a>
-                <input type="checkbox" />
+                <input type="checkbox" value={loadedFileRefs.at(idx)} />
                 <span>Удалить файл</span>
               </li>
             ))}

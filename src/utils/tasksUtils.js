@@ -15,8 +15,11 @@ const loadFiles = async (files, fileRefs) => {
   }
 };
 
-export const deleteFiles = async (files) => {
-  for (const file of files) await deleteObject(ref(getStorage(app), file));
+export const deleteFiles = async (fileRefs) => {
+  for (const fileRef of fileRefs) {
+    const deleteRef = ref(getStorage(app), fileRef);
+    await deleteObject(deleteRef);
+  }
 };
 
 export const updateTask = async (
@@ -30,8 +33,8 @@ export const updateTask = async (
       filesToAdd,
       filesToAdd.map((_) => `${updateParams.name}/${generateHash()}`)
     );
-  if (!filesToRemove.length) await deleteFiles(filesToRemove);
-  await updateDoc(doc(db, 'tasks', id), updateParams);
+  // if (!filesToRemove.length) await deleteFiles(filesToRemove);
+  // await updateDoc(doc(db, 'tasks', id), updateParams);
 };
 
 export const createTask = async ({
