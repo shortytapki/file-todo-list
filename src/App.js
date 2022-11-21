@@ -17,9 +17,10 @@ function App() {
       const querySnapshot = await getDocs(collection(db, 'tasks'));
       let docs = [];
       querySnapshot.forEach((doc) => {
-        docs.push(doc.data());
+        docs.push({ ...doc.data(), id: doc.id });
       });
       setData(docs);
+      console.log(docs);
     };
     getData();
   }, []);

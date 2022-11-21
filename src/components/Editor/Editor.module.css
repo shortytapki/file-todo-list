@@ -28,3 +28,8 @@ textarea {
 input {
   height: 5rem;
 }
+/* 
+input[type='file'] {
+  background-color: #5dc6;
+  padding: 3rem;
+} */

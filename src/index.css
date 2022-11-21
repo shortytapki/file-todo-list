@@ -1,7 +1,8 @@
 :root {
   --prussian-blue: #023047;
+  --prussian-blue-shade: rgb(1, 23, 34);
   --red: #e60023;
-  --red-shade: rgba(230, 0, 35, 0.574);
+  --red-shade: #af001a;
   --selective-yellow: #ffb703ff;
 }
 

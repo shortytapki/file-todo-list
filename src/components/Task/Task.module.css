@@ -2,3 +2,32 @@
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   background-color: #219ebc;
 }
+
+.header {
+  font-size: 2.4rem;
+  margin-bottom: 3rem;
+}
+
+.description {
+  font-size: 1.6rem;
+  height: auto;
+  margin-bottom: 3rem;
+}
+
+.buttons {
+  display: flex;
+  gap: 2rem;
+  justify-content: flex-end;
+}
+
+.link:link,
+.link:visited {
+  color: #fff;
+  font-size: 2rem;
+}
+
+.link:hover,
+.link:active {
+  cursor: pointer;
+  color: #000;
+}

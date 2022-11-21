@@ -12,10 +12,15 @@
 
 .button:hover {
   cursor: pointer;
+  background-color: var(--prussian-blue-shade);
 }
 
 .remove {
   background-color: var(--red);
+}
+
+.remove:hover {
+  background-color: var(--red-shade);
 }
 
 .add {
