@@ -9,7 +9,7 @@ import {
 import { app, db } from '../firebase-config';
 import { generateHash } from './generateHash';
 
-const loadFiles = async (files, fileRefs) => {
+export const loadFiles = async (files, fileRefs) => {
   for (let idx = 0; idx < files.length; idx++) {
     await uploadBytes(ref(getStorage(app), fileRefs.at(idx)), files.at(idx));
   }
@@ -37,18 +37,12 @@ export const updateTask = async (
   // await updateDoc(doc(db, 'tasks', id), updateParams);
 };
 
-export const createTask = async ({
-  name,
-  description,
-  endsAt,
-  fileRefs,
-  files,
-}) => {
-  await addDoc(collection(db, 'tasks'), {
+export const createTask = async ({ name, description, endsAt }) => {
+  const res = await addDoc(collection(db, 'tasks'), {
     name: name,
     description: description,
     endsAt: Timestamp.fromDate(new Date(endsAt)),
-    fileRefs: fileRefs,
+    fileRefs: [],
   });
-  await loadFiles(files, fileRefs);
+  return res.id;
 };

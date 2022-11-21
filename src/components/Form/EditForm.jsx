@@ -1,11 +1,12 @@
 import styles from './Form.module.css';
 import { generateHash } from '../../utils/generateHash';
 import { db } from '../../firebase-config';
-import { doc } from 'firebase/firestore';
+import { doc, Timestamp } from 'firebase/firestore';
 import { Button } from '../Button';
 import { useState } from 'react';
-import { deleteFiles } from '../../utils/tasksUtils';
+import { deleteFiles, loadFiles } from '../../utils/tasksUtils';
 import { updateDoc } from 'firebase/firestore';
+import { uploadBytes } from 'firebase/storage';
 
 export const EditForm = ({
   id,
@@ -14,12 +15,17 @@ export const EditForm = ({
   initDescription,
   initEndsAt,
   loadedFileRefs,
-  files,
 }) => {
   const [upload, setUpload] = useState(false);
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    const [nameInput, timeInput, descriptionInput, fileInput] = e.target;
+    const name = nameInput.value;
+    const description = descriptionInput.value;
+    const endsAt = timeInput.value;
+    const newFiles = Array.from(fileInput.files);
+    const newFileRefs = newFiles.map((_) => `${id}/${generateHash()}`);
     const removingFileRefs = Array.from(
       e.target.querySelectorAll('input[type="checkbox"]')
     )
@@ -35,13 +41,20 @@ export const EditForm = ({
       });
     }
 
+    if (newFileRefs.length) {
+      await loadFiles(newFiles, newFileRefs);
+      await updateDoc(doc(db, 'tasks', id), {
+        fileRefs: loadedFileRefs.concat(newFileRefs),
+      });
+    }
+
+    await updateDoc(doc(db, 'tasks', id), {
+      name: name,
+      description: description,
+      endsAt: Timestamp.fromDate(new Date(endsAt)),
+    });
+
     window.location.reload();
-    // const [nameInput, timeInput, descriptionInput, fileInput] = e.target;
-    // const name = nameInput.value;
-    // const description = descriptionInput.value;
-    // const endsAt = timeInput.value;
-    // const newFiles = Array.from(fileInput.files);
-    // const newFileRefs = newFiles.map((_) => `${name}/${generateHash()}`);
   };
 
   return (

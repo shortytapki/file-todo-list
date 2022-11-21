@@ -3,7 +3,9 @@ import { generateHash } from '../../utils/generateHash';
 
 import { Button } from '../Button';
 import { useState } from 'react';
-import { createTask } from '../../utils/tasksUtils';
+import { createTask, loadFiles } from '../../utils/tasksUtils';
+import { updateDoc, doc } from 'firebase/firestore';
+import { db } from '../../firebase-config';
 
 export const AddForm = () => {
   const [upload, setUpload] = useState(false);
@@ -14,9 +16,11 @@ export const AddForm = () => {
     const description = descriptionInput.value;
     const endsAt = timeInput.value;
     const files = Array.from(fileInput.files);
-    const fileRefs = files.map((_) => `${name}/${generateHash()}`);
     setUpload(true);
-    await createTask({ name, description, endsAt, fileRefs, files });
+    const id = await createTask({ name, description, endsAt });
+    const fileRefs = files.map((_) => `${id}/${generateHash()}`);
+    await updateDoc(doc(db, 'tasks', id), { fileRefs: fileRefs });
+    await loadFiles(files, fileRefs);
     window.location.reload();
   };
 
