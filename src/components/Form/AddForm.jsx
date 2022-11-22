@@ -7,6 +7,9 @@ import { createTask, loadFiles } from '../../utils/tasksUtils';
 import { updateDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase-config';
 
+/**
+ * Функция возвращает форму добавления задачи
+ */
 export const AddForm = () => {
   const [upload, setUpload] = useState(false);
   const submitHandler = async (e) => {
@@ -17,7 +20,7 @@ export const AddForm = () => {
     const endsAt = timeInput.value;
     const files = Array.from(fileInput.files);
     setUpload(true);
-    const id = await createTask({ name, description, endsAt });
+    const id = createTask({ name, description, endsAt });
     const fileRefs = files.map(
       (file) => `${id}/${generateHash() + '-' + file.name}`
     );

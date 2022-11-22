@@ -7,6 +7,17 @@ import { useEffect, useState } from 'react';
 import { deleteFiles } from '../../utils/tasksUtils';
 import { EditForm } from '../Form';
 
+/**
+ * Функция возвращает элемент задачи, отображая содержание в соответствии с переданными параметрами
+ * @param {Object} props
+ * @param {string} props.name
+ * @param {string} props.description
+ * @param {Object} props.endsAt
+ * @param {string} props.id
+ * @param {string[]} props.fileRefs
+ * @param {boolean} props.isCompleted
+ * @returns
+ */
 export const Task = ({
   name,
   description,

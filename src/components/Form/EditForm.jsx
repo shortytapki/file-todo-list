@@ -5,6 +5,18 @@ import { Button } from '../Button';
 import { useState } from 'react';
 import { updateTask } from '../../utils/tasksUtils';
 
+/**
+ * Функция возвращает форму для редактирования содержания задачи
+ * с заполненными полями и ссылками на прикреплённые файлы
+ * @param {Object} props
+ * @param {string} props.id
+ * @param {string[]} props.urls
+ * @param {string} props.initName
+ * @param {string} props.initDescription
+ * @param {string} props.initEndsAt
+ * @param {string[]} props.loadedFileRefs
+ * @returns
+ */
 export const EditForm = ({
   id,
   urls,
