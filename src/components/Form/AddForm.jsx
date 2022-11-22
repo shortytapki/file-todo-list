@@ -18,7 +18,9 @@ export const AddForm = () => {
     const files = Array.from(fileInput.files);
     setUpload(true);
     const id = await createTask({ name, description, endsAt });
-    const fileRefs = files.map((_) => `${id}/${generateHash()}`);
+    const fileRefs = files.map(
+      (file) => `${id}/${generateHash() + '-' + file.name}`
+    );
     await updateDoc(doc(db, 'tasks', id), { fileRefs: fileRefs });
     await loadFiles(files, fileRefs);
     window.location.reload();

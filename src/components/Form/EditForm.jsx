@@ -1,12 +1,9 @@
 import styles from './Form.module.css';
 import { generateHash } from '../../utils/generateHash';
-import { db } from '../../firebase-config';
-import { doc, Timestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore';
 import { Button } from '../Button';
 import { useState } from 'react';
-import { deleteFiles, loadFiles } from '../../utils/tasksUtils';
-import { updateDoc } from 'firebase/firestore';
-import { uploadBytes } from 'firebase/storage';
+import { updateTask } from '../../utils/tasksUtils';
 
 export const EditForm = ({
   id,
@@ -25,35 +22,21 @@ export const EditForm = ({
     const description = descriptionInput.value;
     const endsAt = timeInput.value;
     const newFiles = Array.from(fileInput.files);
-    const newFileRefs = newFiles.map((_) => `${id}/${generateHash()}`);
+    const newFileRefs = newFiles.map(
+      (file) => `${id}/${generateHash() + '-' + file.name}`
+    );
+    const updateParams = {
+      name: name,
+      description: description,
+      endsAt: Timestamp.fromDate(new Date(endsAt)),
+    };
     const removingFileRefs = Array.from(
       e.target.querySelectorAll('input[type="checkbox"]')
     )
       .filter((input) => input.checked)
       .map((input) => input.value);
-
-    if (removingFileRefs.length) {
-      await deleteFiles(removingFileRefs);
-      await updateDoc(doc(db, 'tasks', id), {
-        fileRefs: loadedFileRefs.filter(
-          (ref) => !removingFileRefs.includes(ref)
-        ),
-      });
-    }
-
-    if (newFileRefs.length) {
-      await loadFiles(newFiles, newFileRefs);
-      await updateDoc(doc(db, 'tasks', id), {
-        fileRefs: loadedFileRefs.concat(newFileRefs),
-      });
-    }
-
-    await updateDoc(doc(db, 'tasks', id), {
-      name: name,
-      description: description,
-      endsAt: Timestamp.fromDate(new Date(endsAt)),
-    });
-
+    setUpload(true);
+    await updateTask(id, updateParams, removingFileRefs, newFiles, newFileRefs);
     window.location.reload();
   };
 
@@ -85,7 +68,7 @@ export const EditForm = ({
           <ul className="links">
             {urls.map((url, idx) => (
               <li key={url}>
-                <a href={url}>{loadedFileRefs.at(idx)}</a>
+                <a href={url}>{loadedFileRefs.at(idx).split('/').at(1)}</a>
                 <input type="checkbox" value={loadedFileRefs.at(idx)} />
                 <span>Удалить файл</span>
               </li>

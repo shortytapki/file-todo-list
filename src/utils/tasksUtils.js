@@ -5,9 +5,9 @@ import {
   collection,
   updateDoc,
   doc,
+  getDoc,
 } from 'firebase/firestore';
 import { app, db } from '../firebase-config';
-import { generateHash } from './generateHash';
 
 export const loadFiles = async (files, fileRefs) => {
   for (let idx = 0; idx < files.length; idx++) {
@@ -25,16 +25,28 @@ export const deleteFiles = async (fileRefs) => {
 export const updateTask = async (
   id,
   updateParams,
-  filesToRemove = [],
-  filesToAdd = []
+  removingFileRefs,
+  newFiles,
+  newFileRefs
 ) => {
-  if (!filesToAdd.length)
-    await loadFiles(
-      filesToAdd,
-      filesToAdd.map((_) => `${updateParams.name}/${generateHash()}`)
-    );
-  // if (!filesToRemove.length) await deleteFiles(filesToRemove);
-  // await updateDoc(doc(db, 'tasks', id), updateParams);
+  if (removingFileRefs.length) {
+    await deleteFiles(removingFileRefs);
+    const docSnap = await getDoc(doc(db, 'tasks', id));
+    const fileRefs = docSnap.data().fileRefs;
+    await updateDoc(doc(db, 'tasks', id), {
+      fileRefs: fileRefs.filter((ref) => !removingFileRefs.includes(ref)),
+    });
+  }
+
+  if (newFileRefs.length) {
+    await loadFiles(newFiles, newFileRefs);
+    const docSnap = await getDoc(doc(db, 'tasks', id));
+    const fileRefs = docSnap.data().fileRefs;
+    await updateDoc(doc(db, 'tasks', id), {
+      fileRefs: fileRefs.concat(newFileRefs),
+    });
+  }
+  await updateDoc(doc(db, 'tasks', id), updateParams);
 };
 
 export const createTask = async ({ name, description, endsAt }) => {
@@ -42,6 +54,7 @@ export const createTask = async ({ name, description, endsAt }) => {
     name: name,
     description: description,
     endsAt: Timestamp.fromDate(new Date(endsAt)),
+    isCompleted: false,
     fileRefs: [],
   });
   return res.id;

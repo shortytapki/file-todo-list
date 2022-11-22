@@ -1,16 +1,23 @@
 import styles from './Task.module.css';
 import { Button } from '../Button';
-import { doc, deleteDoc } from 'firebase/firestore';
+import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { ref, getDownloadURL, getStorage } from 'firebase/storage';
 import { app, db } from '../../firebase-config';
 import { useEffect, useState } from 'react';
 import { deleteFiles } from '../../utils/tasksUtils';
 import { EditForm } from '../Form';
 
-export const Task = ({ name, description, endsAt, id, fileRefs }) => {
+export const Task = ({
+  name,
+  description,
+  endsAt,
+  id,
+  fileRefs,
+  isCompleted,
+}) => {
   const [isDeleted, setIsDeleted] = useState(false);
   const [urls, setUrls] = useState([]);
-  const [isCompleted, setIsCompleted] = useState(false);
+  const [completed, setCompleted] = useState(isCompleted);
   const [editorIsOpen, setEdtiorIsOpen] = useState();
   const expTimeStamp = new Date().getTime();
   const endsAtTimestamp = endsAt.seconds * 1000;
@@ -34,7 +41,10 @@ export const Task = ({ name, description, endsAt, id, fileRefs }) => {
     await deleteFiles(fileRefs);
   };
 
-  const completeHandler = () => setIsCompleted((prev) => !prev);
+  const completeHandler = async () => {
+    setCompleted(!isCompleted);
+    await updateDoc(doc(db, 'tasks', id), { isCompleted: !completed });
+  };
   const editHandler = () => setEdtiorIsOpen((prev) => !prev);
 
   return (
@@ -60,7 +70,7 @@ export const Task = ({ name, description, endsAt, id, fileRefs }) => {
         <div
           className={`${styles.task} card ${
             endsAtTimestamp < expTimeStamp ? styles.expired : ''
-          } ${isCompleted ? styles.completed : ''}`}
+          } ${completed ? styles.completed : ''}`}
         >
           <header className={styles.header}>
             <h2>{name}</h2>
@@ -70,20 +80,26 @@ export const Task = ({ name, description, endsAt, id, fileRefs }) => {
             </span>
           </header>
           <p className={styles.description}>{description}</p>
-          <p className={styles.files}>Прикреплённые файлы</p>
+          {urls.length ? (
+            <p className={styles.files}>Прикреплённые файлы:</p>
+          ) : (
+            ''
+          )}
           <ul className="links">
-            {urls.map((url, idx) => (
-              <li key={idx}>
-                <a href={url}>{fileRefs.at(idx)}</a>
-              </li>
-            ))}
+            {urls.length
+              ? urls.map((url, idx) => (
+                  <li key={idx}>
+                    <a href={url}>{fileRefs.at(idx).split('/').at(1)}</a>
+                  </li>
+                ))
+              : ''}
           </ul>
           <div className={styles.buttons}>
             <Button handler={editHandler} colorType="edit">
               Редактировать
             </Button>
             <Button handler={completeHandler} colorType="markAsCompleted">
-              {isCompleted ? 'Вернуть в активные' : 'Отметить как выполненную'}
+              {completed ? 'Вернуть в активные' : 'Отметить как выполненную'}
             </Button>
             <Button handler={removeHandler} colorType="remove">
               Удалить
